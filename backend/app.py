@@ -33,7 +33,13 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if path == "/api/health":
                 return self.json(
-                    200, {"status": "ok", "monitoring": False, "mode": "paper-only"}
+                    200,
+                    {
+                        "app": "guru",
+                        "status": "ok",
+                        "monitoring": False,
+                        "mode": "paper-only",
+                    },
                 )
             if path == "/api/dashboard":
                 return self.json(200, service.dashboard())

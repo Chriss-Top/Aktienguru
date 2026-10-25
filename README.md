@@ -2,6 +2,28 @@
 
 Moderne lokale Plattform für transparente Aktienanalyse und **ausschließlich virtuelle** Portfolios. Neu aufgebaut mit React, TypeScript, Vite und Python. Keine erfundenen Marktkurse, kein Echtgeldhandel, keine kostenpflichtigen Dienste.
 
+## Einfach starten: Mac-Download
+
+1. **[Guru für Mac herunterladen](https://github.com/Chriss-Top/Aktienguru/raw/refs/heads/main/Guru-Mac.zip)**.
+2. ZIP-Datei entpacken und im Ordner `Guru` die Datei **`Guru starten.command` doppelklicken**.
+3. Guru öffnet deinen Browser automatisch. Das geöffnete Terminalfenster laufen lassen; zum Beenden `Ctrl+C` drücken.
+
+Im Mac-Paket ist die gebaute Oberfläche enthalten. Du brauchst **kein Git, Node.js oder npm**. Nur **Python 3.11+** muss einmalig installiert sein. Fehlt es, öffnet der Starter die offizielle Python-Downloadseite und erklärt den nächsten Schritt. Nach der Installation den Starter erneut doppelklicken.
+
+macOS kann heruntergeladene Skripte zunächst blockieren. Öffne die Datei in diesem Fall per Rechtsklick → „Öffnen“. Falls macOS weiterhin blockiert, die Hinweise unter Systemeinstellungen → Datenschutz & Sicherheit für genau diese Datei beachten; keine allgemeinen Sicherheitseinstellungen abschalten. Der Starter installiert nichts im Hintergrund und benötigt keine Administratorrechte.
+
+Portfolios werden im entpackten Ordner unter `.data` gespeichert. Beim Wechsel auf einen neuen Download den bisherigen Datenordner sichern und übernehmen; bestehende Ordner nicht blind überschreiben. Das Paket enthält keinerlei Portfolio- oder Cache-Daten aus der Entwicklungsumgebung.
+
+### Mac-Paket aktualisieren (Entwicklung)
+
+```sh
+npm ci
+npm run build
+python3 scripts/package_mac.py
+```
+
+`Guru-Mac.zip` enthält ausschließlich die gebaute Oberfläche, Python-Quellcode, den Starter und die Anleitung. Es bündelt keinen Python-Interpreter und ist keine signierte macOS-App.
+
 ## Auf deinem Mac starten
 
 Voraussetzungen: **Node.js 22+**, **Python 3.11+**, Internetzugang. Es werden keine Python-Pakete benötigt; das Backend verwendet die Standardbibliothek einschließlich SQLite. Node/Python können beispielsweise über ihre offiziellen Installer installiert werden.
