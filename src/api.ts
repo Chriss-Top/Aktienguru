@@ -2,6 +2,10 @@
 // without caching results or replaying mutation requests.
 const inFlight = new Map<string, Promise<unknown>>();
 export function api<T>(path: string, body?: unknown): Promise<T> {
+  if (__GURU_STATIC__)
+    return import("./static").then((module) =>
+      module.staticApi(path, body),
+    ) as Promise<T>;
   if (body === undefined && inFlight.has(path))
     return inFlight.get(path) as Promise<T>;
   const request = (async () => {

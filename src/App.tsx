@@ -133,7 +133,11 @@ export function App() {
           </a>
           <span>
             <i className={apiHealthy ? "status-dot" : "status-dot offline"} />
-            {apiHealthy ? "Lokale API verbunden" : "API nicht verbunden"}
+            {apiHealthy
+              ? __GURU_STATIC__
+                ? "Im Browser · privat gespeichert"
+                : "Lokale API verbunden"
+              : "Datenzugriff nicht verfügbar"}
           </span>
           <div className="profile">
             <span>DU</span>
@@ -210,6 +214,27 @@ export function App() {
               Aktualisieren
             </button>
           </div>
+          {__GURU_STATIC__ && (
+            <div className="info-strip">
+              <ShieldCheck size={18} />
+              <p>
+                <strong>Öffentliche Browser-Version.</strong> Echte Tageskurse,
+                kein Livefeed.{" "}
+                {dashboard?.stocks[0] && (
+                  <>
+                    Kurstag {dashboard.stocks[0].date}, Abruf{" "}
+                    {new Date(dashboard.stocks[0].fetched_at).toLocaleString(
+                      "de-DE",
+                    )}
+                    .{" "}
+                  </>
+                )}
+                Portfolios und Hypothesen bleiben ausschließlich in diesem
+                Browser. Kein Login, kein Geräteabgleich. Beim Löschen der
+                Website-Daten gehen sie verloren.
+              </p>
+            </div>
+          )}
           {error && <ErrorBox message={error} retry={refreshData} />}
           {route === "dashboard" ? (
             <DashboardPage

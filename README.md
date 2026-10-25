@@ -2,6 +2,32 @@
 
 Moderne lokale Plattform für transparente Aktienanalyse und **ausschließlich virtuelle** Portfolios. Neu aufgebaut mit React, TypeScript, Vite und Python. Keine erfundenen Marktkurse, kein Echtgeldhandel, keine kostenpflichtigen Dienste.
 
+## Öffentliche Website über GitHub Pages
+
+**Website-Adresse:** https://chriss-top.github.io/Aktienguru/
+
+Keine Downloads, keine Skriptausführung auf deinem Computer und keine Installation. Die öffentliche Version zeigt echte, datierte Tageskurse. Sie benötigt keinen Python-Server beim Besucher. Python exportiert ausschließlich öffentliche Marktinformationen; die Browser-Version berechnet virtuelle Aufträge, Backtests und Bewertungen lokal.
+
+**Wichtig:** Portfolios und Hypothesen werden nur im Speicher dieses Browsers gespeichert, niemals in das öffentliche Repository hochgeladen. Kein Login, keine Synchronisierung und kein automatisches Backup. Beim Löschen der Website-Daten gehen sie verloren. Nutzer können ihren lokalen Speicher selbst bearbeiten; das Browserjournal ist kein manipulationssicheres Archiv.
+
+Der Kursdatenstand ist sichtbar datiert und wird **manuell** erneuert. Der Aktualisieren-Knopf lädt den veröffentlichten Stand, keinen Livefeed. Neue Aufträge werden nach fünf Tagen ohne aktuellen Kursdatenstand gesperrt. Es gibt keine autonome Hintergrundüberwachung.
+
+### Website veröffentlichen
+
+GitHub Pages veröffentlicht bereits den Branch **main / (root)**. Deshalb enthält das Repository eine fertige `index.html` mit `assets/` und `data/`. `.nojekyll` verhindert eine zusätzliche Jekyll-Umwandlung. Der bearbeitbare Vite-Einstieg liegt separat in `web/index.html`. Jeder Push der gebauten Ausgabe auf `main` löst die bestehende Pages-Veröffentlichung aus.
+
+Falls Pages in einer Kopie des Repositories noch nicht eingerichtet ist: **Settings → Pages → Deploy from a branch → main → / (root)** auswählen. Kein separater Hostingdienst und kein API-Schlüssel erforderlich.
+
+### Kursdaten manuell erneuern
+
+```sh
+npm run export:pages  # öffentliche Marktinformationen, niemals Portfolios
+npm run publish:pages # Build und fertige Dateien für main / root erzeugen
+# public/data/market.json, data/, assets/ und index.html prüfen, committen und nach main pushen
+```
+
+Ein Exportfehler überschreibt keinen bestehenden Stand. Die Ausgabe enthält nur Kurse, Corporate Actions, FX und Analysen. Keine Datenbankdatei und keine Nutzerdaten werden exportiert.
+
 ## Einfach starten: Mac-Download
 
 1. **[Guru für Mac herunterladen](https://github.com/Chriss-Top/Aktienguru/raw/refs/heads/main/Guru-Mac.zip)**.

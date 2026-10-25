@@ -67,7 +67,10 @@ export function PredictionPage() {
         <div className="panel-heading">
           <div>
             <h2>Dein Prognosejournal</h2>
-            <p>Gespeicherte Hypothesen werden nicht nachträglich angepasst.</p>
+            <p>
+              Gespeicherte Hypothesen werden von Guru nicht nachträglich
+              angepasst.
+            </p>
           </div>
           <button
             className="button secondary"

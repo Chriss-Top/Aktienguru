@@ -9,7 +9,10 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "python3 -m unittest discover -s tests -v",
     "start": "python3 -m backend.app",
-    "dev:api": "python3 -m backend.app"
+    "dev:api": "python3 -m backend.app",
+    "build:pages": "tsc -b && vite build --mode pages",
+    "export:pages": "python3 scripts/export_pages.py",
+    "publish:pages": "npm run build:pages && python3 scripts/publish_pages.py"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

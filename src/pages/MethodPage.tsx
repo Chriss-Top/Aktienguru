@@ -24,6 +24,23 @@ export function MethodPage() {
           </p>
         </div>
       </section>
+      {__GURU_STATIC__ && (
+        <section className="panel">
+          <h2>Öffentliche Website · persönliche Browserdaten</h2>
+          <p>
+            Diese Version arbeitet mit einem vom Betreiber veröffentlichten,
+            datierten Stand echter Kurshistorien. „Aktualisieren“ lädt diesen
+            Stand neu; es ruft keine aktuellen Börsenkurse ab. Neue Datenstände
+            werden nur manuell veröffentlicht. Portfolios und Prognosejournal
+            werden ausschließlich im lokalen Speicher dieses Browsers
+            gespeichert und nicht an GitHub übertragen. Kein Geräteabgleich oder
+            Backup; Website-Daten können gelöscht oder vom Geräteinhaber
+            bearbeitet werden. Das Journal ist deshalb kein
+            manipulationssicheres Archiv. Eine Anmeldung ist für diese lokale
+            Simulation nicht erforderlich.
+          </p>
+        </section>
+      )}
       <div className="detail-columns">
         <section className="panel">
           <h2>
@@ -38,7 +55,9 @@ export function MethodPage() {
             </li>
             <li>
               Vollständige Tageskurse statt Echtzeit. Quelle, Kurstag und
-              Abrufzeit werden angezeigt. Ein Stunden-Cache reduziert Anfragen.
+              Abrufzeit werden angezeigt. Die öffentliche Website verwendet
+              einen veröffentlichten Datenstand; der lokale Python-Modus nutzt
+              einen Stunden-Cache.
             </li>
             <li>
               Fundamentaldaten sind separat und können vom Anbieter verweigert
@@ -99,10 +118,10 @@ export function MethodPage() {
           Datenrevisionen können Ergebnisse trotzdem verzerren.
         </p>
         <p>
-          Hypothesen werden unveränderlich mit Zeitstempel, Stichtag,
-          Modellversion und Horizont gespeichert. Reale Ergebnisse werden erst
-          nach Ablauf des Horizonts separat ergänzt. Es wird keine
-          Prognosegenauigkeit behauptet.
+          Hypothesen werden mit Zeitstempel, Stichtag, Modellversion und
+          Horizont gespeichert. Reale Ergebnisse werden erst nach Ablauf des
+          Horizonts separat ergänzt. Es wird keine Prognosegenauigkeit
+          behauptet.
         </p>
         <div className="info-strip">
           <Zap size={18} />

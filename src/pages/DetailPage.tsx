@@ -39,7 +39,11 @@ export function DetailPage({
     setNotice("");
     try {
       await api("/predictions", { symbol, horizon });
-      setNotice("Hypothese unveränderlich gespeichert. Noch nicht validiert.");
+      setNotice(
+        __GURU_STATIC__
+          ? "Hypothese lokal in diesem Browser gespeichert. Noch nicht validiert."
+          : "Hypothese unveränderlich gespeichert. Noch nicht validiert.",
+      );
     } catch (e) {
       setNotice((e as Error).message);
     } finally {
