@@ -1,31 +1,120 @@
-# Aktienguru
+# Guru
 
-Browserbasierter Aktienratgeber als erste lauffähige Version. Node.js 24.5+ empfohlen; keine externen npm-Abhängigkeiten.
+Moderne lokale Plattform für transparente Aktienanalyse und **ausschließlich virtuelle** Portfolios. Neu aufgebaut mit React, TypeScript, Vite und Python. Keine erfundenen Marktkurse, kein Echtgeldhandel, keine kostenpflichtigen Dienste.
 
-## Start
+## Auf deinem Mac starten
+
+Voraussetzungen: **Node.js 22+**, **Python 3.11+**, Internetzugang. Es werden keine Python-Pakete benötigt; das Backend verwendet die Standardbibliothek einschließlich SQLite. Node/Python können beispielsweise über ihre offiziellen Installer installiert werden.
 
 ```sh
-cd /workspace/Aktienguru
+git clone https://github.com/Chriss-Top/Aktienguru.git
+cd Aktienguru
+npm ci
+npm run build
 npm start
 ```
 
-Standard: Port 3000, nur Loopback. `HOST` und `PORT` konfigurierbar. `npm test` prüft Trendberechnung und HTTP-Verhalten. `npm run dev` startet mit automatischem Neustart.
+Im Browser **http://127.0.0.1:8000** öffnen. Der Python-Server liefert API und gebautes Frontend aus. Mit `Ctrl+C` beenden. Die Browseradresse gilt für den eigenen Mac; das GitHub-Repository allein ist kein Website-Hosting.
 
-## Funktionen und Grenzen
+### Entwicklung mit Hot Reload
 
-- Deutsche responsive Marktübersicht mit acht Aktien, Charts, Trend-Score und Trends über 20/60/200 Handelstage.
-- Standardmäßig **synthetische Demodaten**. Handel und Guru-Start sind damit gesperrt.
-- `MARKET_MODE=live NODE_USE_ENV_PROXY=1 npm start` lädt die letzten verfügbaren Tageskurse von Yahoo Finance. Benötigt HTTPS-Zugang zu `query1.finance.yahoo.com`. Kein API-Key erforderlich; Verfügbarkeit und Nutzungsbedingungen des Anbieters sind vor produktiver Nutzung zu prüfen. Ein vollständiger erfolgreicher Abruf aller acht Aktien schaltet den Live-Modus frei. Kein Anspruch auf Echtzeitdaten.
-- EUR-Simulationsportfolio mit 100.000 € Startkapital, Käufen, Verkäufen, Transaktionen und Bewertung. USD-Handel bleibt bis zur Implementierung echter Wechselkurse gesperrt. Keine Gebühren, Steuern oder Slippage.
-- Guru: vier Aktien mit höchsten Trend-Scores, je 25 % Startgewicht, Renditebewertung in Heimatwährungen ohne Wechselkurse. Keine validierte Prognose oder Optimierung. Stoppen friert die gespeicherte Bewertung ein; ein neuer Start ersetzt das bisherige Experiment.
-- Daten liegen in `.data/portfolio.json` (mit `DATA_DIR` änderbar). Ein Serverprozess für einen Nutzer; keine Anmeldung oder Mehrbenutzerfähigkeit. Nicht ohne Authentifizierung öffentlich bereitstellen.
-- Marktabruf alle 15 Minuten bei laufendem Server. Guru speichert höchstens einen Snapshot pro UTC-Tag. Laufende Prozesse überleben keinen Umgebungsneustart; zum fortgesetzten Tracking Server erneut starten. Verpasste Tage werden nicht nachgetragen. Bei Abruffehlern bleiben die letzten Daten sichtbar und werden mit Zeitstempel und Fehlerhinweis gekennzeichnet.
-- Mehrjähriges autonomes Tracking braucht dauerhaftes Hosting, Prozessüberwachung, Backups und eine verlässlich lizenzierte Datenquelle.
+Zwei Terminals im Projektverzeichnis:
 
-## Was noch fehlt
+```sh
+# Terminal 1: Python-API auf Port 8000
+npm run dev:api
 
-Walk-forward-Backtests auf echten historischen Daten, Out-of-sample-Auswertung, Benchmarkvergleich, statistische Unsicherheiten, robuste Unternehmensuniversen ohne Survivorship Bias sowie Handelskosten. Die Anwendung nennt ihre Scores deshalb ausdrücklich **Trends**, nicht validierte Vorhersagen. Kein Anlageberatungs- oder Renditeversprechen.
+# Terminal 2: React/Vite auf Port 5173 mit API-Proxy
+npm run dev
+```
 
-## Cloud
+Dann **http://127.0.0.1:5173** öffnen. Nach Python-Änderungen den API-Prozess neu starten. In einer Cloud-Umgebung `npm ci --cache /tmp/guru-npm-cache` nutzen, falls das Home-Verzeichnis nicht beschreibbar ist. `PORT` ändert den Backend-Port; den Vite-Proxy bei abweichendem Port entsprechend konfigurieren.
 
-Im Cloud-Netzwerk muss `query1.finance.yahoo.com` freigegeben sein. Ein verweigerter Zugriff lässt die Anwendung im Demo-Modus. Keine TLS-Prüfung deaktivieren. Installation erfordert keine Downloads; Node muss vorhanden sein. Vor Nutzung echter Daten `MARKET_MODE=live NODE_USE_ENV_PROXY=1` setzen und Dashboardquelle sowie Zeitstempel prüfen.
+## Was die erste Version kann
+
+- Ranking von acht US-Aktien (MSFT, AAPL, NVDA, GOOGL, AMZN, META, JPM, JNJ), Guru-Score 0–100, Suche, Sektorfilter und Sortierung.
+- Echte tägliche Kursdaten über die kostenlose **inoffizielle Yahoo Finance Chart API**, fünfjährige Historie, Quelle/Kurstag/Abrufzeit. Keine Schlüssel erforderlich. Bei API-Fehlern werden Fehlerzustände statt Ersatzdaten angezeigt. Cache: eine Stunde; kurze Fehlerpause vermeidet Anfragewiederholungen.
+- Aktiendetails mit interaktivem Chart (Maus, Touch und Pfeiltasten), Zeitraumwahl, Trendhorizonten, Score-Beiträgen, modellbasierten Chancen und Risiken. Fundamentale Kennzahlen werden separat über die Quote API angefragt. Wenn Yahoo diese verweigert, werden sie ausdrücklich als nicht verfügbar angezeigt. Es gibt keine vollständige oder garantierte Fundamentaldatenversorgung.
+- Persönliches Simulationsportfolio: 100.000 EUR Startkapital, Käufe, Verkäufe, Transaktionsjournal, laufende Bewertung **bei manuellen Abrufen**, EUR-Performance und Vergleich mit SPY.
+- Separates Guru-Portfolio: drei höchste Scores im vollständigen Universum, je ein Drittel Startbudget einschließlich Gebühren, ganze Stückzahlen, Rest als Cash. Buy-and-hold, keine automatischen Umschichtungen. Ein manuelles Stoppen friert die Bewertung ein; weitere Experimente erhalten eigene IDs und bleiben neben alten erhalten.
+- Historischer **Einzelaktien**-Backtest für die Regel „Score ≥ 60: investiert, sonst Cash“, ein Tag Signalverzögerung, Gebühren und SPY-Vergleich. Dies ist nicht derselbe Test wie eine historische Top-3-Universumsstrategie; deren Backtest bleibt ein späterer Ausbauschritt.
+- Unveränderliches Prognosejournal mit Erstellungsdatum, Datenstichtag, Modellversion und 20/60/200 Handelstagen Horizont. Eine positive Richtungshypothese wird nur ab Score 60 formuliert. Tatsächliche Ergebnisse kommen nach Ablauf des Horizonts in eine getrennte Tabelle. Die Auswertung wird manuell ausgelöst. Keine behauptete Prognosegenauigkeit.
+
+## Daten, Berechnungen und Grenzen
+
+### Guru-Score `momentum-risk-v1`
+
+Für Total-Return-bereinigte Schlusskurse:
+
+```text
+R_n = 100 × (Kurs_heute / Kurs_vor_n_Handelstagen − 1)
+Vol = Standardabweichung der letzten 60 Tagesrenditen × √252 × 100
+clamp(x) = max(0, min(1, x))
+Score = rund(
+  30 × clamp(0.5 + R_20 / 40)
++ 35 × clamp(0.5 + R_60 / 80)
++ 25 × clamp(0.5 + R_200 / 120)
++ 10 × clamp(1 − Vol / 80)
+)
+```
+
+Mindestens 201 gültige Kurstage sind mathematisch erforderlich, der Anbieteradapter verlangt 210. Fundamentals fließen **nicht** in diesen Score ein. Der Score ist eine historische Zustandsbeschreibung, weder Gewinnwahrscheinlichkeit noch Kursziel. Gewichte und Schwellen sind dokumentierte Startannahmen, nicht empirisch optimierte oder validierte Parameter.
+
+### Portfolio-Rechnung
+
+- Ausführung zum **letzten vollständigen gemeinsamen Tageskurs** von Aktie, EUR/USD und SPY, kein Zugriff auf Broker. Die letzte Tageskerze wird während der regulären Börsensitzung ausgeschlossen.
+- Das ist ein vereinfachtes Lernmodell: Eine nachträgliche Order zum schon bekannten Schlusskurs wäre im echten Handel nicht garantiert ausführbar. Die Backtest-Engine verwendet deshalb explizit verzögerte Ausführung.
+- Gebühren pro Auftrag: **0,1 % des EUR-Auftragswerts, mindestens 1 EUR**. Keine Steuern, Spreads, Slippage oder Zinsen auf Cash. Bruchstücke sind im persönlichen Portfolio zulässig; Leerverkäufe sind gesperrt.
+- Reale Split-Ereignisse verändern die Stückzahl; reale Dividenden werden in Cash umgerechnet. Dividendengutschrift vereinfacht am **Ex-Tag**, nicht am späteren Zahltag; keine automatische Wiederanlage im Portfolio. Käufe am Ex-Tag erhalten diese Dividende nicht.
+- Yahoo normalisiert historische Rohkurse und Dividenden für spätere Splits. Der Adapter rekonstruiert die damaligen Ausführungskurse, damit die Bestandsbuchhaltung Splits nicht doppelt berücksichtigt. Bereinigte Kurse werden nur für Total-Return-Analyse verwendet.
+- USD-Werte und Dividenden werden mit **EURUSD=X** (USD je EUR) in EUR umgerechnet. FX-Effekte sind Bestandteil der EUR-Performance. Fehlende oder mehr als sieben Kalendertage entfernte historische Daten blockieren die Bewertung.
+- Benchmark: **SPY als investierbarer S&P-500-ETF-Proxy**, ab der ersten Transaktion, inklusive Dividendenwiederanlage und USD/EUR-Effekt. SPY hat keine zusätzlichen simulierten Handelsgebühren; Unterschiede zum Cash-Dividendenportfolio sind zu beachten. Die Benchmark ist angesichts des konzentrierten US-Universums sinnvoll, aber kein identisches Risikoprofil.
+- Mehr als fünf Kalendertage alte gemeinsame Schlusskurse sperren aktuelle Bewertung und Handel. Bei Datenfehlern bleiben gespeicherte Aufträge erhalten. Das verfügbare Fünfjahresarchiv begrenzt die spätere Rekonstruktion; für längere Nutzung ist ein dauerhaft gepflegtes Kursarchiv zu ergänzen.
+
+### Backtesting und Prognosevalidierung
+
+Der Score für eine Ausführung am Tag `i` verwendet ausschließlich Kurse **bis `i−1`**. Ausgeführt wird zum Schlusskurs von `i`; der folgende Return ist `i → i+1`. Der Test beginnt nach 201 gemeinsamen Historientagen. Dividenden/Splits sind in den bereinigten Renditen enthalten. Je Positionswechsel werden konfigurierbare Basispunktgebühren abgezogen; am letzten Tag wird eine offene Position mit Gebühr liquidiert. Der Backtest läuft in **USD** gegen SPY in USD, also ohne FX-Effekt. Er verwendet keine rückwirkenden Fundamentals.
+
+Keine künftigen Kurse fließen in Signale ein. Dennoch bestehen **Selektions-/Survivorship-Bias** durch heutige Aktienauswahl, Parameterwahl und mögliche Datenrevisionen. Yahoo-Daten sind kein Point-in-time-Archiv historischer Veröffentlichungen. Die Tests beweisen die zeitliche Trennung im Algorithmus, nicht historische Datenrevisionsfreiheit oder künftige Renditen.
+
+Prognosen sind prospektiv gespeicherte Richtungshypothesen, keine extrapolierten Fantasiepreise. Nach Ablauf von N tatsächlichen Aktien-Handelstagen wird die echte Total-Return-Rendite mit SPY verglichen. Eine positive Hypothese gilt nur bei positiver Rendite **und** Outperformance als eingetreten. Neutral gespeicherte Signale erhalten keine Trefferbewertung. Diese Auswertung beinhaltet keine Portfolio-Handelskosten. Ein kleines oder ausstehendes Sample begründet keine behauptete Genauigkeit.
+
+## Architektur
+
+```text
+src/                      React/TypeScript, responsive Oberfläche, interaktive Charts
+backend/models.py         Domänentypen, Modellversion, Provider-Protokoll
+backend/provider.py       Yahoo-Adapter, Normalisierung, Cache, Fehlerbehandlung
+backend/analysis.py       Score, verzögerter Backtest, Drawdown
+backend/portfolio.py      Replay-Ledger, Corporate Actions, FX, Benchmarkkurven
+backend/service.py        Anwendungsfälle, Guru-Regeln, Prognosevalidierung
+backend/monitoring.py     Deaktivierte Schnittstelle für einen späteren Worker
+backend/repository.py     Repository-Protokoll + SQLite-Adapter
+backend/app.py            Lokale JSON-API und Frontend-Hosting
+tests/test_core.py        Isolierte Tests (nur dort synthetische Fixtures)
+```
+
+SQLite speichert Kurscache, Portfolios und Transaktionen sowie getrennte `predictions`- und `outcomes`-Tabellen. Die Repository-Schnittstelle ist die Austauschgrenze für eine spätere Supabase-Implementierung; **Supabase ist noch nicht integriert**. Ein zukünftiger Adapter muss die Eindeutigkeit von Prognosen, atomare Portfolio-Updates und konkurrierende Schreibzugriffe absichern. Aktuell ist ausschließlich **ein lokaler Serverprozess für einen Nutzer** vorgesehen.
+
+### Datenablage
+
+Standard: `.data/guru.sqlite3`, mit `GURU_DB=/absoluter/pfad/guru.sqlite3` änderbar. Datenbank, Cache und lokale Nutzerdaten werden nicht committed. Bestehende `.data/portfolio.json` aus dem früheren Prototyp wird nicht verändert oder automatisch importiert. Für ein Backup Server beenden und `.data` sichern. Kein automatisches Löschen von Experimenten oder Prognosen.
+
+## Tests und Prüfung
+
+```sh
+npm test              # Python unittest: Berechnung, Zukunftstrennung, Ledger, Persistenz
+npm run build         # striktes TypeScript + Produktionsbuild
+```
+
+Die Tests nutzen ausschließlich isolierte, ausdrücklich synthetische Fixtures in temporären Datenbanken; die Anwendung lädt diese niemals. Externer Datenzugriff ist kein Bestandteil der deterministischen Tests. Live-Funktion separat prüfen: `/api/dashboard` muss echte Aktien mit Kurstag und Quelle liefern; `/api/health` allein beweist keine Datenversorgung.
+
+## Betrieb, Kosten und nächste Schritte
+
+- Kein bezahlter Dienst und keine API-Schlüssel erforderlich. Für produktive Nutzung Verfügbarkeit, Lizenz und Bedingungen der Datenquelle prüfen; die inoffizielle API kann 401/403/429 liefern. Es wird kein Abo automatisch abgeschlossen.
+- Lokal an `127.0.0.1` gebunden. **Keine Anmeldung oder Mehrbenutzerfähigkeit**; nicht als öffentlichen Dienst freigeben. Schreibzugriffe von fremden Browser-Ursprüngen werden abgewiesen. Für Hosting sind Authentifizierung, Rate Limits und ein geeigneter Produktionsserver erforderlich.
+- HTTPS-Ziel: `query1.finance.yahoo.com`. Proxy und TLS-Verifikation beibehalten. Auf macOS bei TLS-Fehlern den offiziellen Python-Zertifikatsinstaller nutzen; die Prüfung nicht abschalten.
+- **Keine autonomen Hintergrundjobs.** Die Provider-/Service-Schnittstellen und persistierten Hypothesen ermöglichen später einen Scheduler. Zeitplanung, dauerhafte Kursarchivierung, Benachrichtigungen und automatische Beobachtung sind bewusst nicht implementiert.
+- Geplante Ausbaustufen: lizenzierte Fundamentals, historisches Universum, historischer Guru-Top-3-Backtest, robuste Out-of-sample-Validierung, Supabase-Adapter und optional später Hintergrundüberwachung.
+
+Keine Anlageberatung. Vergangene Ergebnisse garantieren keine zukünftigen Erträge.
